@@ -2847,7 +2847,7 @@ if (jQuery) {
 
         // Create Text span
         if (allowHtml) {
-          tooltipText = $('<span></span>').html(tooltipText);
+          tooltipText = $('<span></span>').text(tooltipText);
         } else {
           tooltipText = $('<span></span>').text(tooltipText);
         }
@@ -3441,7 +3441,8 @@ if (jQuery) {
 
           // Insert as text;
         } else {
-          toast.innerHTML = this.message;
+          toast.textContent = this.message;
+
         }
 
         // Append toasft
@@ -6280,7 +6281,13 @@ if (jQuery) {
               if (typeof callback === 'function') {
                 callback.call(this, currentElement);
               } else if (typeof callback === 'string') {
-                var callbackFunc = new Function(callback);
+                // Assuming callback is a string containing the function body
+                // Validate or sanitize the callback string before creating a new function
+                if (/^[a-zA-Z0-9_]+$/.test(callback)) {
+                    var callbackFunc = new Function(callback);
+                } else {
+                    throw new Error('Invalid callback function.');
+                }
                 callbackFunc(currentElement);
               }
               value.done = true;
