@@ -562,7 +562,15 @@ jQuery.Velocity ? console.log("Velocity is already loaded. You may be needlessly
         }, addClass: function (e, t) {
           e.classList ? e.classList.add(t) : e.className += (e.className.length ? " " : "") + t;
         }, removeClass: function (e, t) {
-          e.classList ? e.classList.remove(t) : e.className = e.className.toString().replace(new RegExp("(^|\\s)" + t.split(" ").join("|") + "(\\s|$)", "gi"), " ");
+          if (e.classList) {
+            t.split(" ").forEach(function(className) {
+              e.classList.remove(className);
+            });
+          } else {
+            t.split(" ").forEach(function(className) {
+              e.className = e.className.replace(new RegExp('(^|\\s)' + className + '(\\s|$)', 'gi'), ' ');
+            });
+          }
         } }, getPropertyValue: function (e, r, n, o) {
         function s(e, r) {
           function n() {
@@ -658,7 +666,8 @@ jQuery.Velocity ? console.log("Velocity is already loaded. You may be needlessly
           } else if ("reverse" === A) {
             if (!i(o).tweensContainer) return void f.dequeue(o, s.queue);"none" === i(o).opts.display && (i(o).opts.display = "auto"), "hidden" === i(o).opts.visibility && (i(o).opts.visibility = "visible"), i(o).opts.loop = !1, i(o).opts.begin = null, i(o).opts.complete = null, v.easing || delete s.easing, v.duration || delete s.duration, s = f.extend({}, i(o).opts, s);var E = f.extend(!0, {}, i(o).tweensContainer);for (var H in E) {
               if ("element" !== H) {
-                var N = E[H].startValue;E[H].startValue = E[H].currentValue = E[H].endValue, E[H].endValue = N, m.isEmptyObject(v) || (E[H].easing = s.easing), b.debug && console.log("reverse tweensContainer (" + H + "): " + JSON.stringify(E[H]), o);
+                var N = E[H].startValue;E[H].startValue = E[H].currentValue = E[H].endValue, E[H].endValue = N, m.isEmptyObject(v) || (E[H].easing = s.easing), b.debug && console.log("reverse tweensContainer (%s): %s", H, JSON.stringify(E[H]));
+
               }
             }l = E;
           } else if ("start" === A) {
