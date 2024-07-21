@@ -1,8 +1,7 @@
-from hashlib import md5
 from typing import NamedTuple, Optional
 
 from aiopg import Connection
-
+from cryptography.hazmat.primitives import hashes
 
 class User(NamedTuple):
     id: int
@@ -10,8 +9,7 @@ class User(NamedTuple):
     middle_name: Optional[str]
     last_name: str
     username: str
-    pwd_hash: str
-    is_admin: bool
+    pwd_hash: bytes  # Change pwd_hash type to bytes
 
     @classmethod
     def from_raw(cls, raw: tuple):
@@ -38,4 +36,7 @@ class User(NamedTuple):
             return User.from_raw(await cur.fetchone())
 
     def check_password(self, password: str):
-        return self.pwd_hash == md5(password.encode('utf-8')).hexdigest()
+        digest = hashes.Hash(hashes.SHA384())
+        digest.update(password.encode('utf-8'))
+        password_hash = digest.finalize()
+        return self.pwd_hash == password_hash
